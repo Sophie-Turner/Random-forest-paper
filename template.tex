@@ -74,9 +74,31 @@
 %\usepackage{algorithmic}
 %\usepackage{algorithm}
 %\usepackage{amsthm}
-%\usepackage{float}
+\usepackage{float}
 %\usepackage{subfig}
-%\usepackage{rotating}
+\usepackage{rotating}
+
+% Formatting.
+\usepackage{url}
+
+% Figures.
+\usepackage{setspace}
+\usepackage{graphicx} % For images.
+\usepackage{subcaption} % For multiple images stuck together.
+
+% Tables.
+\usepackage{booktabs} % For big tables.
+\usepackage[table]{xcolor} % For colour coding in tables.
+\usepackage{rotating} % Sideways tables.
+\usepackage{adjustbox} % For big tables.
+
+% Maths.
+\usepackage{amsmath} % For aligning eqns.
+\usepackage{siunitx} % For standard form numbers.
+\newcommand{\RR}{\ensuremath{R^2}}
+
+% Chemistry
+\usepackage[version=4]{mhchem}
 
 % Horrible to format J-values.
 % Simple species.
@@ -132,7 +154,7 @@
 
 \begin{document}
 
-\title{Emulation of the United Kingdom Chemistry and Aerosols (version 13.9) Photolysis Schemes (FASTJ-X vn2.X?) with a Random Forest}
+\title{Emulation of the United Kingdom Chemistry and Aerosols (version 13.9) Photolysis Schemes (Fast-JX version 6.4) with a Random Forest}
 
 
 % \Author[affil]{given_name}{surname}
@@ -212,7 +234,7 @@ The random forest photolysis scheme ran seven times faster in UKCA than the main
 \subsection{Photolysis in UKCA}
 
 % Atmospheric photolysis.
-Atmospheric photolysis refers to the phenomenon in which molecules in the atmosphere are dissociated by solar radiation. As a result of some common photolysis processes, radicals are formed, which are very reactive species, and they rapidly initiate subsequent atmospheric reactions \cite{finlayson-pitts_chemistry_2000}. This has considerable implications for air pollution. Atmospheric photolysis reactions affect phenomena such as smog in urban areas, and the thinning of the stratospheric ozone layer, which seriously impact the health of people and the environment \cite{seinfeld_atmospheric_2016}. Including photolysis in climate models is necessary for obtaining accurate predictions of changes in atmospheric composition. The rates of photolysis reactions are influenced by various factors, including clouds, aerosols, atmospheric pressure and the time of day and year \cite{liang_chemical_2013}. All of these factors must be carefully taken into account when developing a comprehensive model that simulates this process.
+Atmospheric photolysis refers to the phenomenon in which molecules in the atmosphere are dissociated by solar radiation. As a result of some common photolysis processes, radicals are formed, which are very reactive species, and they rapidly initiate subsequent atmospheric reactions \citep{finlayson-pitts_chemistry_2000}. This has considerable implications for air pollution. Atmospheric photolysis reactions affect phenomena such as smog in urban areas, and the thinning of the stratospheric ozone layer, which seriously impact the health of people and the environment \citep{seinfeld_atmospheric_2016}. Including photolysis in climate models is necessary for obtaining accurate predictions of changes in atmospheric composition. The rates of photolysis reactions are influenced by various factors, including clouds, aerosols, atmospheric pressure and the time of day and year \citep{liang_chemical_2013}. All of these factors must be carefully taken into account when developing a comprehensive model that simulates this process.
 
 % How photolysis is calculated.
 The calculation of photolysis rates involves determining the intensity of solar radiation at different wavelengths, quantifying the absorption cross-sections of the molecules and accounting for factors such as atmospheric composition, altitude, latitude, time of day and season. It is beneficial to isolate and focus on the rate coefficient of this process to avoid confusion caused by other factors, such as changes in concentration of the chemicals over time. The rate coefficient of the photolysis reaction is termed `J' and has units of $s^{-1}$. The rate coefficient is also referred to as the J-value, J rate, rate constant, or frequency. The term, `J-value', is used in this work. The J-value of a particular photolabile chemical, which absorbs light in a specific range of wavelengths, can be calculated as
@@ -221,29 +243,29 @@ J = \int_{0}^{\infty} \Phi (\lambda, T) \sigma (\lambda, T) F (\theta, \lambda) 
 \end{equation}
 \addcontentsline{equ}{myequations}
 {\protect\numberline{\theequation}Photolysis rate coefficient}
-where $\Phi$ is the quantum yield for photolysis of the chemical, $\lambda$ is the wavelength, $T$ is the temperature, $\sigma$ is the absorption cross-section, $F$ is the flux of light, also known as the actinic flux, $\theta$ is the solar zenith angle and $d \lambda$ is the change in wavelength \cite{king_calculating_2013}. Flux refers to the difference in the amount of radiation reaching the molecule over time, which varies significantly at a point over the course of a day.
-At a point in space and time in the atmosphere, the solar zenith angle (SZA) is the angle between the direction of incoming solar radiation and the local vertical line perpendicular to the Earth's surface at that point \cite{finlayson-pitts_chemistry_2000}. 
+where $\Phi$ is the quantum yield for photolysis of the chemical, $\lambda$ is the wavelength, $T$ is the temperature, $\sigma$ is the absorption cross-section, $F$ is the flux of light, also known as the actinic flux, $\theta$ is the solar zenith angle and $d \lambda$ is the change in wavelength \citep{king_calculating_2013}. Flux refers to the difference in the amount of radiation reaching the molecule over time, which varies significantly at a point over the course of a day.
+At a point in space and time in the atmosphere, the solar zenith angle (SZA) is the angle between the direction of incoming solar radiation and the local vertical line perpendicular to the Earth's surface at that point \citep{finlayson-pitts_chemistry_2000}. 
 J-values can range from around $10^{-16} s^{-1}$ to over $10^{-2} s^{-1}$ and vary greatly with altitude.
 
 % UKESM, UM and UKCA.
-The United Kindgom Earth System Model (UKESM) is a collaborative initiative involving the Met Office, the National Centre for Atmospheric Science (NCAS) and the UK academic community \cite{sellar_ukesm1_2019}. UKESM plays an important role in assessing climate forcing, conducting projections on air quality and quantifying the impacts of mitigation measures. It contributes to the Coupled Model Intercomparison Project \cite{eyring_overview_2016}. The atmospheric component of UKESM is the Unified Model (UM), developed by the Met Office, while the United Kingdom Chemistry and Aerosols (UKCA) model \cite{archibald_description_2020} serves as its atmospheric chemistry and aerosol component. The UM and UKCA code is extensive and complicated due to a variety of chemistry schemes and photolysis approaches, and there are various UM versions and many configurations that run on different computing infrastructures.
+The United Kindgom Earth System Model (UKESM) is a collaborative initiative involving the Met Office, the National Centre for Atmospheric Science (NCAS) and the UK academic community \citep{sellar_ukesm1_2019}. UKESM plays an important role in assessing climate forcing, conducting projections on air quality and quantifying the impacts of mitigation measures. It contributes to the Coupled Model Intercomparison Project \citep{eyring_overview_2016}. The atmospheric component of UKESM is the Unified Model (UM), developed by the Met Office, while the United Kingdom Chemistry and Aerosols (UKCA) model \citep{archibald_description_2020} serves as its atmospheric chemistry and aerosol component. The UM and UKCA code is extensive and complicated due to a variety of chemistry schemes and photolysis approaches, and there are various UM versions and many configurations that run on different computing infrastructures.
 
 % Photolysis schemes in UKCA and how they work.
-Different schemes are present in UKCA for photolysis calculations, including a legacy `2D' scheme based on the interpolation of tabulated values pre-calculated in the Cambridge 2D model \cite{abraham_united_2014}, and the Fast-JX scheme \cite{telford_implementation_2013}, suitable for tropospheric and stratospheric conditions. The primary photolysis scheme currently used in UKCA is Fast-JX, which is a more advanced and precise approach. % Strat scheme.
-Fast-JX is intended to be used at atmospheric pressures greater than 20 Pa \cite{wild_fast-j_2000} and most photolysis occurs within this region. When using Fast-JX in the UM for configurations which include altitudes at which atmospheric pressure drops below 20 Pa, there are three options for how to handle the portion of lower pressure; Fast-JX may be used, photolysis may be approximated using the lookup table of stratospheric rates, or both Fast-JX and the lookup table may be used and their results aggregated.
+Different schemes are present in UKCA for photolysis calculations, including a legacy `2D' scheme based on the interpolation of tabulated values pre-calculated in the Cambridge 2D model \citep{abraham_united_2014}, and the Fast-JX scheme \citep{telford_implementation_2013}, suitable for tropospheric and stratospheric conditions. The primary photolysis scheme currently used in UKCA is Fast-JX, which is a more advanced and precise approach. % Strat scheme.
+Fast-JX is intended to be used at atmospheric pressures greater than 20 Pa \citep{wild_fast-j_2000} and most photolysis occurs within this region. When using Fast-JX in the UM for configurations which include altitudes at which atmospheric pressure drops below 20 Pa, there are three options for how to handle the portion of lower pressure; Fast-JX may be used, photolysis may be approximated using the lookup table of stratospheric rates, or both Fast-JX and the lookup table may be used and their results aggregated.
 The most accurate of the options at pressures less than 20 Pa is considered to be the combination of both Fast-JX and the lookup table scheme. Hence, the emulation should, ideally, not only emulate Fast-JX, but also emulate the combined results of Fast-JX and the lookup table in the upper stratosphere.
 
 \begin{figure}
     \centering \includegraphics[width=\textwidth]{images/flame.png}
-    \caption{\textit{Flame graph showing the timed processes during a run of the UM, from Dichev and Tamerus (2021) \cite{dichev_report_2021}. UKCA and photolysis are highlighted in green and blue, respectively, with their total percentages of the UM's run-time.}}
+    \caption{\textit{Flame graph showing the timed processes during a run of the UM, from \cite{dichev_report_2021}. UKCA and photolysis are highlighted in green and blue, respectively, with their total percentages of the UM's run-time.}}
     \label{flamegraph}
 \end{figure}
 
 % Timings.
-Among the various components of UKCA, photolysis is known to be computationally demanding. It involves numerous calculations that encompass different chemicals, locations, altitudes and time steps, making up approximately 20\% of UKCA's run-time, and about 25\% of UKCA's time spent on scientific calculations \cite{dichev_report_2021}. In each grid box, there is incoming and outgoing light, which can occur either directly or through scattering, involving neighbouring grid boxes. These effects can propagate across multiple boxes of the grid. The photolysis calculating routines are invoked for each grid box at hourly UKCA time steps. The flame graph in Figure \ref{flamegraph} shows an example of the timed processes during a run of the UM, of which photolysis accounts for 5.13\% of the total run-time \cite{dichev_report_2021}. These vary depending on the chemistry scheme chosen, the type of suite run and other options selected for the run. For this benchmark, an atmosphere-only configuration of the UM was used, with the StratTrop chemistry scheme \cite{archibald_description_2020}, on the Cambridge Service for Data Driven Discovery 3 (CSD3) HPC with 56 central processing unit (CPU) cores and with no specifically dedicated parallelism \cite{cambridge_service_for_data_driven_discovery_research_2025}.  
+Among the various components of UKCA, photolysis is known to be computationally demanding. It involves numerous calculations that encompass different chemicals, locations, altitudes and time steps, making up approximately 20\% of UKCA's run-time, and about 25\% of UKCA's time spent on scientific calculations \citep{dichev_report_2021}. In each grid box, there is incoming and outgoing light, which can occur either directly or through scattering, involving neighbouring grid boxes. These effects can propagate across multiple boxes of the grid. The photolysis calculating routines are invoked for each grid box at hourly UKCA time steps. The flame graph in Figure \ref{flamegraph} shows an example of the timed processes during a run of the UM, of which photolysis accounts for 5.13\% of the total run-time \citep{dichev_report_2021}. These vary depending on the chemistry scheme chosen, the type of suite run and other options selected for the run. For this benchmark, an atmosphere-only configuration of the UM was used, with the StratTrop chemistry scheme \citep{archibald_description_2020}, on the Cambridge Service for Data Driven Discovery 3 (CSD3) HPC with 56 central processing unit (CPU) cores and with no specifically dedicated parallelism \citep{cambridge_service_for_data_driven_discovery_research_2025}.  
 
 % Power usage, electricity bill cost and GWP.
-Reducing energy usage is a priority for climate modellers and high-performance computing (HPC) centres. Running models such as UKESM in typical scientific workloads, comprising many multi-decadal simulations, requires megawatts of energy, incurring a global warming potential of tonnes of CO$_2$ equivalent greenhouse gas emissions (CO$_2$e) and financial costs of tens of thousands of GBP which often belong to the taxpayers \cite{jackson_emissions_2023}. Improving the computational efficiency of processes within the model, including photolysis, is essential for reducing its energy consumption.
+Reducing energy usage is a priority for climate modellers and high-performance computing (HPC) centres. Running models such as UKESM in typical scientific workloads, comprising many multi-decadal simulations, requires megawatts of energy, incurring a global warming potential of tonnes of CO$_2$ equivalent greenhouse gas emissions (CO$_2$e) and financial costs of tens of thousands of GBP which often belong to the taxpayers \citep{jackson_emissions_2023}. Improving the computational efficiency of processes within the model, including photolysis, is essential for reducing its energy consumption.
 
 % Why speed it up.
 If significant progress is made to speed up photolysis simulations, it could open up new possibilities for studying the complex chemistry-climate dynamics within the coupled Earth System over extended periods, spanning multiple centuries.
@@ -254,7 +276,7 @@ If significant progress is made to speed up photolysis simulations, it could ope
 Machine learning applications can efficiently process large datasets, emulate complex computations involved in simulations and learn from existing data patterns and relationships to make predictions and optimise calculations. This could potentially reduce the computational burden and time required for photolysis calculations. Additionally, ML could help identify key factors and parameters that influence photolysis, enabling the development of more efficient algorithms and models. The realm of ML is extensive and growing, offering innumerable possibilities and methodologies to pursue. An objective of this project is to narrow down these options and determine the most suitable approach. Many ML methods suffer from the same drawbacks; for example, supervised ML tends to struggle with extrapolation, as it often fails to accurately predict conditions that lie beyond the range of the training data.
 
 % How emulation works.
-ML parameterisations, such as emulation, can reduce the need to balance correct physics with time-saving simplifications \cite{lagerquist_using_2021}. Emulation involves a surrogate model that can statistically predict the outcome of the simulation, with faster execution. Machine learning emulators that are trained using model-simulated data and aim to mimic existing parameterisations may not need additional physical constraints. This is because the simulated data already incorporate the necessary physical constraints implicitly. A common problem with emulation of atmospheric models is error accumulation as the period of simulated time increases beyond a few days \cite{krasnopolsky_using_2022}.
+ML parameterisations, such as emulation, can reduce the need to balance correct physics with time-saving simplifications \citep{lagerquist_using_2021}. Emulation involves a surrogate model that can statistically predict the outcome of the simulation, with faster execution. Machine learning emulators that are trained using model-simulated data and aim to mimic existing parameterisations may not need additional physical constraints. This is because the simulated data already incorporate the necessary physical constraints implicitly. A common problem with emulation of atmospheric models is error accumulation as the period of simulated time increases beyond a few days \citep{krasnopolsky_using_2022}.
 
 % What was done.
 Data were preprocessed and feature selection tests were repeated using an algorithm relevant to the random forest. 
@@ -265,15 +287,15 @@ Possibilities to improve the model were assessed, including standardising target
 A random forest was trained to enable integration of a proof of concept version of the emulator into the UM. The ML model's data were imported into the UM and a new module was added to the UKCA code for the emulated photolysis scheme. The emulator was tested in the UM and outputs were compared to outputs with the original photolysis scheme, for J-values and relevant downstream chemistry and physics parameters. Both schemes were also timed within the UM and UKCA, and the machine learning photolysis scheme was faster than the original simulation. Tasks were identified which must be carried out in the future in order to fully integrate a random forest emulator into the UM for operational use.
 
 % Diagram of a decision tree.
-\begin{sidewaysfigure}[htpb]
+\begin{figure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/Tree.png}
+    \includegraphics[width=\textwidth]{images/Tree.png}
     \caption{\textit{An example of a decision tree predicting $J_{HCHO}$. This tree has 15 nodes, 8 leaf nodes and a depth of 3. The threshold and prediction values displayed are arbitrary dummy values with no scientific basis.}}
     \label{tree diagram}
-\end{sidewaysfigure}
+\end{figure}
 
 % Explain what a decision tree is.
-A decision tree is a model containing many nodes, which iteratively compares the value of an input feature for each sample to a threshold value at every node and traverses a path through the tree depending on whether the input feature value exceeds the threshold value at each node, ending at a leaf node which contains a prediction value for the output feature \cite{tibshirani_elements_2001}. Each node considers one randomly chosen input feature. A top-down, greedy binary decision tree was used, in which each parent node has two child nodes, with an input feature value less than or equal to the node's threshold leading to the left child and a value higher than the threshold leading to the right child. Figure \ref{tree diagram} represents a simplified example of this process. The tree shown in the Figure is a single-output model but a decision tree can also output a vector of prediction values at leaf nodes for a set of output features.
+A decision tree is a model containing many nodes, which iteratively compares the value of an input feature for each sample to a threshold value at every node and traverses a path through the tree depending on whether the input feature value exceeds the threshold value at each node, ending at a leaf node which contains a prediction value for the output feature \citep{tibshirani_elements_2001}. Each node considers one randomly chosen input feature. A top-down, greedy binary decision tree was used, in which each parent node has two child nodes, with an input feature value less than or equal to the node's threshold leading to the left child and a value higher than the threshold leading to the right child. Figure \ref{tree diagram} represents a simplified example of this process. The tree shown in the Figure is a single-output model but a decision tree can also output a vector of prediction values at leaf nodes for a set of output features.
 
 % Show maths eqns.
 Chosen splits minimise the loss function at each node, $m$. 
@@ -290,7 +312,7 @@ At each leaf node, the prediction is the mean of the target values of samples re
 The mean of the squared errors of predictions to targets is used as the performance metric.
 
 % Explain what random forest is.
-A random forest was explored as an alternative tree-based method. A random forest is an ensemble of decision trees, in which each tree is trained on a subsample of the data and input features, and the output is the mean of the outputs from every tree \cite{james_introduction_2023}.
+A random forest was explored as an alternative tree-based method. A random forest is an ensemble of decision trees, in which each tree is trained on a subsample of the data and input features, and the output is the mean of the outputs from every tree \citep{james_introduction_2023}.
 
 % Why might it be useful?
 A benefit of using a random forest rather than a single decision tree is the expansion of values which can be output by averaging the leaf node values from every tree. This results in a smoother transition between potential output values, allowing the outputs to appear almost continuous rather than obviously discrete. Furthermore, each tree in a random forest may be more efficient to train, store in memory and traverse than a single decision tree when trained on subsets of features. For example, if each tree is trained on two randomly selected input features out of ten, the depth of tree growth should be far less than that of a single tree trained on all ten input features. Although random forests do not explicitly learn relationships between features, each tree may be able to learn more specific patterns caused by the two selected input features than could a single decision tree.   
@@ -301,7 +323,7 @@ Enhancing the efficiency of photolysis simulations could lead to faster executio
 
 Assuming a simulation throughput of approximately four model years per real day, even a 1\% improvement in overall UM performance would be significant, potentially enabling an additional two weeks of simulated time per real day and considerably reducing cumulative energy and financial costs. Accordingly, this project aims for an overall UM speedup of 1\%, corresponding to approximately a 4\% speedup of UKCA and approximately a 20\% speedup of photolysis.
 
-The target predictive skill of the emulator is to achieve a coefficient of determination of at least 0.9 for every reaction, in line with high-performing models in recent literature \cite{liu_deep_2025} \cite{pan_development_2025}, ideally throughout the spatial and temporal range of the test data. This aim is ambitious because the model must emulate photolysis throughout the whole global grid up to a height of 85 km and in all atmospheric conditions, which is a more complex task than those described in the literature. Emulator error is additional to the intrinsic error of the underlying model though, such that total deviation from observations may be larger in practice.
+The target predictive skill of the emulator is to achieve a coefficient of determination of at least 0.9 for every reaction, in line with high-performing models in recent literature \citep{liu_deep_2025} \citep{pan_development_2025}, ideally throughout the spatial and temporal range of the test data. This aim is ambitious because the model must emulate photolysis throughout the whole global grid up to a height of 85 km and in all atmospheric conditions, which is a more complex task than those described in the literature. Emulator error is additional to the intrinsic error of the underlying model though, such that total deviation from observations may be larger in practice.
 A list of emulated photolysis reactions is provided in Appendix \ref{rxns}.\\
 
 The specific research aims are:\\
@@ -315,7 +337,7 @@ The specific research aims are:\\
 \subsection{Performance Metrics}
 
 % R2 
-The main accuracy metric chosen for model assessment was the coefficient of determination, also known as the \RR\ score, which measures the proportion of variance in the dependent variable that is predictable from the independent variables \cite{draper_applied_1998}. 
+The main accuracy metric chosen for model assessment was the coefficient of determination, also known as the \RR\ score, which measures the proportion of variance in the dependent variable that is predictable from the independent variables \citep{draper_applied_1998}. 
 % The maths of what R2 is.
 The coefficient of determination is defined as 
 \begin{equation}
@@ -345,7 +367,7 @@ Using the \RR\ score as an accuracy metric sometimes makes predictions appear po
 A dataset was compiled from UKCA outputs, encompassing significantly more data than the sample used in the linear regression experiments, for training a machine learning model. All J-values calculated by the StratTrop chemistry scheme were output, rather than just those comparable to ATom data which were previously used. Code was also written to output all additional and intermediate J-values from the CRI-Strat2 chemistry scheme in case it was later used. Four days of data were retrieved from a nudged SSP simulation. They were each at a resolution of 24 hours, 85 vertical levels, 144 latitudes and 192 longitudes, and contained 83 fields of J-values and fields related to photolysis. 33 of the J-values output from the UM were only available in CRI-Strat2 and not StratTrop, and output J-values of zero in all data from StratTrop runs. They were not necessary because they were intermediate species and contained the same functional groups as other species output from StratTrop, meaning they used the same base J-values from Fast-JX.
 
 % Flattening.
-The Scikit-Learn Python package was used for quick development and testing of different ML methods because it provides a vast library of pre-built models of various ML algorithms, which can easily be adjusted in Python \cite{pedregosa_scikit-learn_2011}. Other packages tend to be specifically designed for one approach, such as neural networks, and lack the range of tools and generalisability available from Scikit-Learn. For most applications, Scikit-Learn requires input data to be structured as a two-dimensional array, in which one dimension is samples and the other is features. The output data from the UM were five-dimensional, with dimensions of time, altitude above sea-level, latitude, longitude and field. `Field' is the name given to output items, such as each J-value and physical parameters from the UM. The data were flattened from five dimensions to two without losing the spatial or temporal information by including all fields, as well as time, altitude, latitude and longitude as features in the resulting array. This flattening required data to be padded, which was specifically done in the same order of dimensions as the UM's output data. This repetition did not increase the size of the data because it is representative of the standard one-dimensional, contiguous storage of the data at a lower level, resulting in the same number of elements. This structure allowed the dimension values themselves (time, altitude, latitude and longitude) to be included as rows in the matrix of potential training data, treated in the same way as the other fields. A risk identified of this approach was that repeating some values over many samples could bias the ML models, depending on the ML techniques chosen. Nevertheless, the dataset was constructed with the intention of suitably sampling from it when training each ML model. The surface-level solar zenith angle was also repeated up each vertical column. The flattened data were saved as numpy arrays in .npy files to enable fast reading, writing and computation in Python \cite{harris_array_2020}. A metadata file was written during this process to explain the data structure. 
+The Scikit-Learn Python package was used for quick development and testing of different ML methods because it provides a vast library of pre-built models of various ML algorithms, which can easily be adjusted in Python \citep{pedregosa_scikit-learn_2011}. Other packages tend to be specifically designed for one approach, such as neural networks, and lack the range of tools and generalisability available from Scikit-Learn. For most applications, Scikit-Learn requires input data to be structured as a two-dimensional array, in which one dimension is samples and the other is features. The output data from the UM were five-dimensional, with dimensions of time, altitude above sea-level, latitude, longitude and field. `Field' is the name given to output items, such as each J-value and physical parameters from the UM. The data were flattened from five dimensions to two without losing the spatial or temporal information by including all fields, as well as time, altitude, latitude and longitude as features in the resulting array. This flattening required data to be padded, which was specifically done in the same order of dimensions as the UM's output data. This repetition did not increase the size of the data because it is representative of the standard one-dimensional, contiguous storage of the data at a lower level, resulting in the same number of elements. This structure allowed the dimension values themselves (time, altitude, latitude and longitude) to be included as rows in the matrix of potential training data, treated in the same way as the other fields. A risk identified of this approach was that repeating some values over many samples could bias the ML models, depending on the ML techniques chosen. Nevertheless, the dataset was constructed with the intention of suitably sampling from it when training each ML model. The surface-level solar zenith angle was also repeated up each vertical column. The flattened data were saved as numpy arrays in .npy files to enable fast reading, writing and computation in Python \citep{harris_array_2020}. A metadata file was written during this process to explain the data structure. 
 
 % Physical data.
 Physical data from the UM were used as model inputs, including temporal and spatial data as well as the pressure, shortwave flux, SZA, temperature, humidity and cloud fraction of each sampled point.
@@ -379,14 +401,14 @@ The random forest design was tuned by adjusting number of trees, depth of trees,
 
 \begin{figure}[htpb]
     \centering 
-    \includegraphics[width=\linewidth]{images/Forest n trees MSE.png}
+    \includegraphics[scale=0.9]{images/Forest n trees MSE.png}
     \caption{\textit{MSE of random forests of 1 to 20 trees, predicting a representative subset of reactions (\JHCHOr, \JOOO, \JNOO, \JNOOO, \JHOCl\ and \JHHOO) from physical inputs in a global sample of one year of data.}}
     \label{n trees MSE}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering 
-    \includegraphics[scale=1.1]{images/n trees R2.png}
+    \includegraphics[scale=0.95]{images/n trees R2.png}
     \caption{\textit{Mean \RR\ scores of predictions to targets from random forests containing different numbers of trees, from 1 to 100. Physical inputs were used to predict all J-values in a global sample of one year of data.}}
     \label{n trees R2}
 \end{figure}
@@ -394,7 +416,7 @@ The random forest design was tuned by adjusting number of trees, depth of trees,
 \begin{table}[htbp]
 \centering
 \caption{\textit{A summary of random forests' performance using different numbers of trees from 1 to 2000, while keeping the memory usage similar by adjusting the size of the trees in the forest. Physical inputs were used to predict all J-values in a global sample of a year of data. `Max samples' is the proportion of training data samples provided to each tree, randomly sampled from the full training dataset.}}
-\resizebox{\textwidth}{!}{
+
 \begin{tabular}{|lccccc|}
 \hline
 Test description & Trees & Max samples & Max leaf nodes/tree & $R^2$ & MSE / $s^{-2}$ \\
@@ -408,7 +430,7 @@ Increase n trees & 2000 & 0.2 & 100 & 0.962 & $5.21 \times 10^{-7}$ \\
 Best above w/ double tree size & 20 & 0.2 & 20000 & 0.987 & $3.87 \times 10^{-7}$ \\
 Best above w/ double n trees & 40 & 0.2 & 10000 & 0.986 & $3.98 \times 10^{-7}$ \\
 \hline
-\end{tabular}}
+\end{tabular}
 \label{n trees table}
 \end{table}
 
@@ -421,7 +443,7 @@ Tests on the random forest configuration indicated that model performance was mo
 \subsection{Feature Importance}
 
 % Which feature importance algos were used?
-Impurity-based feature importance experiments were conducted using the Mean Decrease in Impurity method, which measures the mean and standard deviation of accumulation of the impurity decrease within each decision tree, using an MSE loss function \cite{tibshirani_elements_2001}.
+Impurity-based feature importance experiments were conducted using the Mean Decrease in Impurity method, which measures the mean and standard deviation of accumulation of the impurity decrease within each decision tree, using an MSE loss function \citep{tibshirani_elements_2001}.
 Impurity is calculated at every parent node in a tree as the variance of the target values at the node, measuring how much the considered feature at that node reduces prediction variance. 
 The impurity at a node, $I(t)$, is defined as
 \begin{equation}
@@ -434,7 +456,7 @@ The decrease in impurity, $\Delta I$, at the node, which splits on feature $j$, 
 \Delta I(t,j) = I(t) - \frac{N_{t_L}}{N_t}I(t_L) - \frac{N_{t_R}}{N_t}I(t_R)
 \end{equation}
 {\protect\numberline{\theequation}Decrease in impurity}
-where $t_L$ and $t_R$ are the node's left and right children \cite{breiman_random_2001}.
+where $t_L$ and $t_R$ are the node's left and right children \citep{breiman_random_2001}.
 The importance of feature $j$ is computed as the sum of the impurity decreases for all of the nodes in the tree which split on it. The feature importances are normalised and averaged across all trees. The importance score represents the average reduction in prediction variance attributable to splits on that feature across the random forest.
 The physical input features selected as most important were SZA, downward shortwave flux, altitude and pressure.
 The final set of features chosen were day, hour, latitude, longitude, altitude, pressure, SZA, downward shortwave flux, upward shortwave flux, temperature, humidity and cloud fraction. 
@@ -446,7 +468,7 @@ The random forest performed best when predicting large J-values and struggled wi
 
 \begin{figure}[htpb]
     \centering 
-    \includegraphics[width=\linewidth]{images/ISON trop med time.png}
+    \includegraphics[scale=0.65]{images/ISON trop med time.png}
     \caption{\textit{Median tropospheric \JISON\ targets and predictions over a year of global, tropospheric test data.}}
     \label{ISON days med}
 \end{figure}
@@ -457,21 +479,21 @@ For some reactions, the model performed better in the stratosphere than in the t
 % Masking method.
 Vertical model levels were chosen as a criteria for applying a mask because their values were easy and efficient to check online within the photolysis routines in UKCA. Alternatively, the value of altitude, pressure, downward shortwave flux, SZA or predicted J-value could be used to determine whether or not to apply a mask. The method applied was a hard cut-off, with all values below the masking threshold set to zero and all those above it left unaltered. 
 
-\subection{Final Model Design}
+\subsection{Final Model Design}
 
 \begin{figure}[htpb]
     \centering 
 
     % HCHOr corr plot overall (V good).
     \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{images/HCHOr.png}
+    \includegraphics[scale=0.65]{images/HCHOr.png}
     \caption{\textit{\JHCHOr}}
     \label{HCHOr corr}
     \end{subfigure}
 
     % Propanal corr plot overall (V good).
     \begin{subfigure}{\linewidth}
-    \includegraphics[width=\linewidth]{images/propanal.png}
+    \includegraphics[scale=0.65]{images/propanal.png}
     \caption{\textit{\Jpropanal}}
     \label{propanal corr}
     \end{subfigure}
@@ -502,14 +524,14 @@ Specific J-values were masked to zero at low altitudes to mitigate the overpredi
 
     \begin{subfigure}{\linewidth}
     \centering
-    \includegraphics{images/O2 masked preds lenient.png}
+    \includegraphics[scale=0.8]{images/O2 masked preds lenient.png}
     \caption{\textit{\JOOP\ masked too low.}}
     \label{mask too low}
     \end{subfigure}
 
     \begin{subfigure}{\linewidth}
     \centering
-    \includegraphics{images/O2 masked preds strict.png}
+    \includegraphics[scale=0.8]{images/O2 masked preds strict.png}
     \caption{\textit{\JOOP\ masked too high.}}
     \label{mask too high}
     \end{subfigure}
@@ -557,7 +579,7 @@ During development and testing, the random forest had been trained to predict th
 The random forest had been constructed using the Sci-kit Python package and saved as a pickle file. This was not directly translatable to UKCA's code and the pickle file could not be read in Fortran. To address this, the ML model was decomposed into its constituent arrays and saved as a NetCDF file. Arrays were extracted from each decision tree in the constructed, trained random forest, of which feature to check at each node, the threshold to split on at each node, the index of the left child of each node, the index of the right child of each node and prediction values. All of the decision trees were binary, were not pruned, and were the same size and shape, allowing a consistent structure of matching, one-dimensional arrays to represent each component of each tree. Finally, these structural arrays of each tree were compiled as objects in NetCDF format and the whole random forest was saved as a NetCDF file. 
 
 % Reconstructing forest from NetCDF.
-Next, an algorithm was written to recreate and traverse each decision tree in the random forest using the data in the NetCDF file's arrays. Sci-kit is open-source software, so its own decision tree traversal code was used as a basis, to ensure consistency \cite{scikit-learn_scikit-learn-180sklearntree_treepyx_2025} \cite{scikit-learn_understanding_2025}. 
+Next, an algorithm was written to recreate and traverse each decision tree in the random forest using the data in the NetCDF file's arrays. Sci-kit is open-source software, so its own decision tree traversal code was used as a basis, to ensure consistency \citep{scikit-learn_scikit-learn-180sklearntree_treepyx_2025} \citep{scikit-learn_understanding_2025}. 
 
 % Testing NetCDF.
 To ensure correct conversion of the random forest to NetCDF format, the saved NetCDF file was loaded with Python and the random forest was reconstructed using its data, and recreated with Sci-kit. The original random forest was also loaded into Python from the pickle file and the two versions of the random forest were applied to some test data. Both versions output the same predictions, validating the conversion of pickle to NetCDF format.
@@ -574,12 +596,12 @@ To ensure correct conversion of the random forest to NetCDF format, the saved Ne
     \label{timings flame}
 \end{sidewaysfigure}
 
-\begin{sidewaysfigure}
+\begin{figure}
     \centering 
-    \includegraphics{images/1-month timings.png}
+    \includegraphics[scale=0.95]{images/1-month timings.png}
     \caption{\textit{Photolysis run-time per simulated month for Fast-JX and random forest photolysis.}}
     \label{timings plot}
-\end{sidewaysfigure}
+\end{figure}
 
 % Plots.
 Figure \ref{timings flame} presents UKCA timings, running StratTrop, for a photolysis timestep using Fast-JX and a photolysis timestep using the random forest implementation. The graphs are to scale and represent all of the UKCA processes in the UM timestep, with routines simplified for ease of presentation and interpretation. The portion labelled `photolysis control' represents processes in the main call to photolysis from the UM to UKCA, which handle data and photolysis requirements and conditions independently of the photolysis scheme. The stratospheric lookup table scheme is included in 'photolysis control' for the Fast-JX version, as it is so fast to run that its timings are negligible. The portion labelled `Fast-JX photolysis' encompasses all of Fast-JX, which has an actual call stack depth of up to 10 routines, including a controller, the SZA calculation, radiation and data handling, as well as the photolysis rate calculation. The portion labelled `random forest photolysis' includes two subroutines: the controller code, which processes data, and the calculation code, which traverses the decision trees. Figure \ref{timings plot} exhibits UKCA's real time spent on photolysis in a simulated month.
@@ -593,7 +615,6 @@ After the first photolysis timestep, the ML photolysis routines ran approximatel
 \begin{table}[htbp]
 \centering
 \caption{\textit{Summary of timings and speed-up.}}
-\resizebox{\textwidth}{!}{
 \begin{tabular}{|lccc|}
 \hline
  & Time with Fast-JX / s & Time with ML / s & Run-time \% difference \\
@@ -604,17 +625,17 @@ UKCA photolysis timestep        & 0.3092 & 0.2762 & -10.70 \\
 UM photolysis timestep          & 1.1794 & 1.1463 & -2.805 \\
 UM simulated hour               & 1.6786 & 1.5524 & -1.971 \\
 \hline
-\end{tabular}}
+\end{tabular}
 \label{timings table}
 \end{table}
 
 % Real speedup. 
-Table \ref{timings table} lists a summary of timings for both photolysis schemes and percentage speed-ups provided by ML photolysis. `Initial' and `subsequent' `photolysis timesteps' refer to only the photolysis routines. `UKCA photolysis timestep' refers to the same (subsequent) timestep for UKCA including all of the other routines which run on the same timestep as photolysis, shown in figure \ref{timings flame}. `UM photolysis timestep' refers to the same timestep for the UM, containing UKCA, including all of the other routines which run on the same timestep as photolysis. `UM simulated hour' refers to all three hourly UM timesteps including the photolysis timestep. As one in every three UM timesteps are photolysis timesteps in standard configurations, the real speed-up over a model run is a fraction of the speed-up per photolysis timestep; there are 72 timesteps in a simulated day, of which 24 are photolysis timesteps. The main chemistry processes of UKCA are the most time-consuming processes in the UM and photolysis timesteps are by far the most computationally expensive in the UM because they are also the main chemistry timesteps. Both non-photolysis timesteps per simulated hour took approximately 65.4 ms each, while the photolysis timestep, with StratTrop chemistry, took approximately 309 ms with Fast-JX and 276 ms with ML photolysis. Therefore, UKCA photolysis timesteps were 10.7\% faster with the ML approach and the whole of UKCA in total was 7.5\% faster. This is a significant speedup in the context of UKCA performance improvements, such as the 3\% improvement achieved by Esentürk et al. (2018) \cite{esenturk_quasi-newton_2018}. Assuming that UKCA takes up 26.22\% of the UM's run-time, as reported in \cite{dichev_report_2021}, the UM runs approximately 1.97\% faster with ML photolysis than with Fast-JX.
+Table \ref{timings table} lists a summary of timings for both photolysis schemes and percentage speed-ups provided by ML photolysis. `Initial' and `subsequent' `photolysis timesteps' refer to only the photolysis routines. `UKCA photolysis timestep' refers to the same (subsequent) timestep for UKCA including all of the other routines which run on the same timestep as photolysis, shown in figure \ref{timings flame}. `UM photolysis timestep' refers to the same timestep for the UM, containing UKCA, including all of the other routines which run on the same timestep as photolysis. `UM simulated hour' refers to all three hourly UM timesteps including the photolysis timestep. As one in every three UM timesteps are photolysis timesteps in standard configurations, the real speed-up over a model run is a fraction of the speed-up per photolysis timestep; there are 72 timesteps in a simulated day, of which 24 are photolysis timesteps. The main chemistry processes of UKCA are the most time-consuming processes in the UM and photolysis timesteps are by far the most computationally expensive in the UM because they are also the main chemistry timesteps. Both non-photolysis timesteps per simulated hour took approximately 65.4 ms each, while the photolysis timestep, with StratTrop chemistry, took approximately 309 ms with Fast-JX and 276 ms with ML photolysis. Therefore, UKCA photolysis timesteps were 10.7\% faster with the ML approach and the whole of UKCA in total was 7.5\% faster. This is a significant speedup in the context of UKCA performance improvements, such as the 3\% improvement achieved by \cite{esenturk_quasi-newton_2018}. Assuming that UKCA takes up 26.22\% of the UM's run-time, as reported by \cite{dichev_report_2021}, the UM runs approximately 1.97\% faster with ML photolysis than with Fast-JX.
 
 \subsection{Online Predictive Performance}
 
 % Comparing online and offline models.
-To test that the random forest behaved as expected in UKCA, the output from the new model run online in UKCA was compared to both UKCA target data and equivalent output data from the random forest run offline in Python. It is typical for models developed offline to exhibit reduced performance when coupled into a larger model and run online, due to feedback mechanisms, error propagation and changes in the input data distribution \cite{stensrud_parameterization_2007}. Apart from some expected differences due to considerations such as timestep offset, numerical precision and data copying in the UM, the random forest produced mostly equivalent predictions in both versions. Due to different conditions and test samples, the online model experienced smaller average J-values than seen in the offline test, but the random forest emulated them relatively accurately.
+To test that the random forest behaved as expected in UKCA, the output from the new model run online in UKCA was compared to both UKCA target data and equivalent output data from the random forest run offline in Python. It is typical for models developed offline to exhibit reduced performance when coupled into a larger model and run online, due to feedback mechanisms, error propagation and changes in the input data distribution \citep{stensrud_parameterization_2007}. Apart from some expected differences due to considerations such as timestep offset, numerical precision and data copying in the UM, the random forest produced mostly equivalent predictions in both versions. Due to different conditions and test samples, the online model experienced smaller average J-values than seen in the offline test, but the random forest emulated them relatively accurately.
 
 % Table of results R2.
 \begin{sidewaystable}[htbp]
@@ -739,13 +760,13 @@ To assess the effect of the emulated J-values on downstream science diagnostics 
 % Cl results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/Cl_mass mixing ratio.png}
+    \includegraphics[width=\textheight]{images/Cl_mass mixing ratio_1y.png}
     \caption{\textit{Global daily mean chlorine radical mass mixing ratio from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{Cl MMR}
 \end{sidewaysfigure}
 
 % Why Cl is useful.
-The chlorine radical is representative of halogen radical chemistry, which is sensitive to changes in UV and ozone column \cite{finlayson-pitts_chemistry_2000}. Key reactions include
+The chlorine radical is representative of halogen radical chemistry, which is sensitive to changes in UV and ozone column \citep{finlayson-pitts_chemistry_2000}. Key reactions include
 $Cl_2 + h\nu \rightarrow 2Cl$ and
 $ClO + h\nu \rightarrow Cl + O(^3P)$.
 % Cl results.
@@ -754,13 +775,13 @@ Figure \ref{Cl MMR} displays mean Cl mass mixing ratios over a one-year simulati
 % OH results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/OH_mass mixing ratio.png}
+    \includegraphics[width=\textheight]{images/OH_mass mixing ratio 1y.png}
     \caption{\textit{Global daily mean hydroxyl radical mass mixing ratio from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{OH MMR}
 \end{sidewaysfigure}
 
 % Why OH is useful.
-The hydroxyl radical is a primary oxidant in the troposphere and is sensitive to changes to photolysis. The concentration of OH is influenced by many photolysis reaction pathways, especially those involving \OD\ and HO$_x$, and it also affects methane lifetime and VOC chemistry \cite{seinfeld_atmospheric_2016}. Key reactions include 
+The hydroxyl radical is a primary oxidant in the troposphere and is sensitive to changes to photolysis. The concentration of OH is influenced by many photolysis reaction pathways, especially those involving \OD\ and HO$_x$, and it also affects methane lifetime and VOC chemistry \citep{seinfeld_atmospheric_2016}. Key reactions include 
 $O_3 + h\nu \rightarrow O(^1D) + O_2$ and 
 $O(^1D) + H_2O \rightarrow 2OH$.
 % OH results.
@@ -771,42 +792,44 @@ Overestimation of OH could be a significant problem in UKCA because OH is an imp
 % Water results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps H₂O mass mixing ratio.png}
-    \caption{\textit{Global monthly mean water mass mixing ratio from 30-year simulations by UKCA with the original and the random forest photolysis schemes. The gap in 2001 is due to some missing data.}}
+    \includegraphics[width=\textheight]{images/H₂O_mass mixing ratio 1y.png}
+    \caption{\textit{Global daily mean water mass mixing ratio from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{H2O MMR}
 \end{sidewaysfigure}
 
 % Why water is useful.
 Water photolysis was difficult to emulate due to its small J-values. Water mass mixing ratios were output to determine whether water photolysis errors impacted water in the atmosphere. Water affects OH production via 
-$O(^1D) + H_2O \rightarrow 2OH$ \cite{jacob_introduction_1999}.
+$O(^1D) + H_2O \rightarrow 2OH$ \citep{jacob_introduction_1999}.
 % Water results.
-Figure \ref{H2O MMR} exhibits mean water mass mixing ratios over 30-year simulations. Long model runs were used for water analysis due to the uncertainty of the severity of \JHHO\ error online, according to previous tests. UKCA with emulated photolysis produced similar water mass mixing ratios to those in UKCA with the original photolysis scheme, suggesting that the masking out of low-altitude water photolysis did not harm the mean water content of the atmosphere. This was supported by viewing water over different timescales and in portions of the atmosphere.  
+Figure \ref{H2O MMR} exhibits mean water mass mixing ratios over one-year simulations. 
+UKCA with emulated photolysis produced similar water mass mixing ratios to those in UKCA with the original photolysis scheme, suggesting that the masking out of low-altitude water photolysis did not harm the mean water content of the atmosphere. This was supported by viewing water over different timescales and in portions of the atmosphere.  
 
 % N2O results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps N₂O mass mixing ratio.png}
-    \caption{\textit{Global monthly mean $N_2O$ mass mixing ratio from 30-year simulations by UKCA with the original and the random forest photolysis schemes. There were some missing data.}}
+    \includegraphics[width=\textheight]{images/N₂O_mass mixing ratio 1y.png}
+    \caption{\textit{Daily mean $N_2O$ mass mixing ratio from a one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{N2O MMR}
 \end{sidewaysfigure}
 
 % Why N2O is useful.
-N$_2$O is useful for viewing effects in the upper atmosphere, as it undergoes photolysis mainly in the stratosphere \cite{world_meteorological_organization_scientific_1998}. Relevant reactions include
+N$_2$O is useful for viewing effects in the upper atmosphere, as it undergoes photolysis mainly in the stratosphere \citep{world_meteorological_organization_scientific_1998}. Relevant reactions include
 $N_2O + h\nu \rightarrow N_2 + O(^1D)$ and
 $N_2O + O(^1D) \rightarrow 2NO$.
 % N2O results.
-Figure \ref{N2O MMR} illustrates mean N$_2$O mass mixing ratios over 30-year simulations. The long model runs show the steady increase of this greenhouse gas over time, attributed to intensifying industrialisation of agriculture and the long lifetime of N$_2$O \cite{tian_global_2024}. Apart from some missing data from both sets, due to technical issues relating to communication with the storage server, UKCA with emulated photolysis reproduced the same overall trend as the original version of UKCA, both annually and over the 30-year test period, although in many months, the global mean was slightly lower than the reference value. 
+Figure \ref{N2O MMR} illustrates mean N$_2$O mass mixing ratios over one-year simulations. The daily mean from UKCA with the random forest diverged from the target values over the first model year, before stabilising with a low bias towards the end of the year.
+UKCA with emulated photolysis reproduced the same overall trend as the original version of UKCA, both annually and over a 30-year test period, although in many months, the global mean was slightly lower than the reference value. 
 
 % NO results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/NO_mass mixing ratio.png}
+    \includegraphics[width=\textheight]{images/NO_mass mixing ratio 1y.png}
     \caption{\textit{Global daily mean NO mass mixing ratio from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{NO MMR}
 \end{sidewaysfigure}
 
 % Why NO is useful.
-NO is a product of NO$_x$ photolysis and affects ozone production \cite{seinfeld_atmospheric_2016}. Some key reactions are
+NO is a product of NO$_x$ photolysis and affects ozone production \citep{seinfeld_atmospheric_2016}. Some key reactions are
 $NO + O_3 \rightarrow NO_2 + O_2$ and
 $NO_2 + h\nu \rightarrow NO + O(^3P)$. 
 % NO results.
@@ -815,77 +838,81 @@ Figure \ref{NO MMR} details daily mean NO mass mixing ratios over a year. UKCA w
 % PAN results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps Peroxyacetyl nitrate mass mixing ratio.png}
-    \caption{\textit{Monthly mean global PAN mass mixing ratio from UKCA with the original and random forest photolysis schemes, over a 30-year simulation. There were some missing data for the year 2001.}}
-    \label{PAN 30 yr}
+    \includegraphics[width=\textheight]{images/peroxyacetyl nitrate mass mixing ratio 1y.png}
+    \caption{\textit{Daily mean global PAN mass mixing ratio from UKCA with the original and random forest photolysis schemes, over a one-year simulation.}}
+    \label{PAN}
 \end{sidewaysfigure}
 
 % Why PAN is useful.
-Peroxyacetyl nitrate (PAN) is a reservoir for NO$_x$ in the troposphere, affecting ozone and OH in the atmosphere \cite{fischer_atmospheric_2014}. Compared to the other species considered, PAN is more sensitive to temperature, one of the input features for the random forest. An important reaction is
+Peroxyacetyl nitrate (PAN) is a reservoir for NO$_x$ in the troposphere, affecting ozone and OH in the atmosphere \citep{fischer_atmospheric_2014}. Compared to the other species considered, PAN is more sensitive to temperature, one of the input features for the random forest. An important reaction is
 $CH_3COO_2 + NO_2 \ce{<=>} PAN$. PAN is also photolabile but its photolysis reaction is minor and is not yet predicted by the current proof of concept random forest photolysis scheme.
 % PAN results.
-Figure \ref{PAN 30 yr} presents 30-year monthly mean PAN mass mixing ratios from UKCA running online in the UM with both photolysis schemes. PAN was recorded over a long timescale due to its relatively long lifetime. The random forest slightly underestimated the amplitude of the peaks and troughs on average, but followed the trend well and remained stable throughout the simulation. 
+Figure \ref{PAN} presents one-year daily mean PAN mass mixing ratios from UKCA running online in the UM with both photolysis schemes. 
+Daily mean PAN was underestimated by UKCA containing the random forest, particularly at troughs from December to April, and less so at peaks from May to July. 
+In a 30-year run, the random forest version slightly underestimated the amplitude of the peaks and troughs of monthly averages, but followed the trend well and remained stable throughout the simulation. 
 
 % SW heat results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/Shortwave heating rates_.png}
+    \includegraphics[width=\textheight]{images/Shortwave heating rates_1y.png}
     \caption{\textit{Global daily mean shortwave heating rates from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{SW heat}
 \end{sidewaysfigure}
 
 % Why SW heating is useful.
-Shortwave heating rates are used to measure the radiative impact of photolysis changes and are affected by ozone absorption and UV flux changes \cite{hartmann_global_2016}. 
+Shortwave heating rates are used to measure the radiative impact of photolysis changes and are affected by ozone absorption and UV flux changes \citep{hartmann_global_2016}. 
 % SW heat results.
 Figure \ref{SW heat} exhibits mean shortwave heating rates over a year. The UM with emulated photolysis produced similar shortwave heating rates to those from the UM with the original photolysis version.
 
 % Why O3 MMR, O3 col and Ox prod are useful.
-Ozone is particularly important for both photochemistry and radiation and is sensitive to NO$_x$ and HO$_x$ \cite{jacob_introduction_1999}.
-Total column ozone affects UV penetration and feeds back to photolysis rates, making it a useful parameter for checking consistency between radiation and photolysis \cite{world_meteorological_organization_scientific_1998}. O$_x$ production measures net ozone production and is an indicator of biases in chemical production rates \cite{finlayson-pitts_chemistry_2000}. Some relevant reactions are 
+Ozone is particularly important for both photochemistry and radiation and is sensitive to NO$_x$ and HO$_x$ \citep{jacob_introduction_1999}.
+Total column ozone affects UV penetration and feeds back to photolysis rates, making it a useful parameter for checking consistency between radiation and photolysis \citep{world_meteorological_organization_scientific_1998}. O$_x$ production measures net ozone production and is an indicator of biases in chemical production rates \citep{finlayson-pitts_chemistry_2000}. Some relevant reactions are 
 $NO_2 + h\nu \rightarrow NO + O(^3P)$ and
 $O(^3P) + O_2 \rightarrow O_3$.
 
 % O3 MMR results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps O₃ mass mixing ratio.png}
-    \caption{\textit{Global monthly mean ozone mass mixing ratio from 30-year simulations by UKCA with the original and the random forest photolysis schemes. The gaps are due to some missing data.}}
+    \includegraphics[width=\textheight]{images/O₃ mass mixing ratio 1y.png}
+    \caption{\textit{Global daily mean ozone mass mixing ratio from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{O3 MMR}
 \end{sidewaysfigure}
 
 % O3 MMR results.
-Figure \ref{O3 MMR} shows mean ozone mass mixing ratios over 30 years, containing a few portions of missing data. UKCA with emulated photolysis generated similar trends of ozone over time. It moderately underestimated global mean ozone throughout the simulation, although the error remained consistent. This was due to ozone being overestimated in the stratosphere but not at all in the troposphere, potentially implying that the model could benefit from the masking threshold of one or more of the J-values being increased in altitude, or that a smoother transition may be required from zero to the predicted J-values across the masking threshold.
+Figure \ref{O3 MMR} shows mean ozone mass mixing ratios over a year. 
+UKCA with emulated photolysis generated similar trends of ozone over time. It moderately underestimated global mean ozone throughout a 30-year simulation, although the error remained consistent after the first nine months of the model run. This was due to ozone being overestimated in the stratosphere but not at all in the troposphere, potentially implying that the model could benefit from the masking threshold of one or more of the J-values being increased in altitude, or that a smoother transition may be required from zero to the predicted J-values across the masking threshold.
 
 % Ox results.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps Oₓ production .png}
-    \caption{\textit{Global monthly mean $O_x$ production from 30-year simulations by UKCA with the original and the random forest photolysis schemes. Some data were missing from the ML output dataset.}}
+    \includegraphics[width=\textheight]{images/Oₓ production 1y.png}
+    \caption{\textit{Global daily mean $O_x$ production from one-year simulations by UKCA with the original and the random forest photolysis schemes.}}
     \label{Ox prod online}
 \end{sidewaysfigure}
 
 % Ox results.
-Figure \ref{Ox prod online} presents mean O$_x$ production over 30-year simulations. UKCA with emulated photolysis displayed the same patterns over time as UKCA with the original photolysis scheme, but underestimated O$_x$ production on average throughout the model run. Masking some J-values to zero at low altitudes had been shown to affect O$_x$ production, as presented in Figure \ref{Ox prod lvl mask}, and the low mean bias suggests that this could be further improved.
+Figure \ref{Ox prod online} presents mean O$_x$ production over one-year simulations. 
+UKCA with emulated photolysis displayed the same patterns over time as UKCA with the original photolysis scheme, but underestimated O$_x$ production on average throughout the model run, particularly for higher average J-values from May to July. Masking some J-values to zero at low altitudes had been shown to affect O$_x$ production, as presented in Figure \ref{Ox prod lvl mask}, and the low mean bias suggests that this could be further improved.
 
 % Common error.
 O$_x$ production and the mass mixing ratios of OH and HO$_2$ displayed similar tendencies to be overestimated at the lower end of their ranges by UKCA with emulated photolysis, corresponding to several reactions whose smallest J-values were overpredicted, including \JHHO.
 
 % CMIP explanation.
-The Coupled Model Intercomparison Project Phase 6 (CMIP6) is an co-ordinated international project in which many climate modelling centres around the world run standardised experiments using their Earth System Models \cite{eyring_overview_2016}. It is useful to compare the effects of new changes to a model with data from CMIP6 models because they provide a benchmark of current scientific knowledge and model uncertainty. 
+The Coupled Model Intercomparison Project Phase 6 (CMIP6) is an co-ordinated international project in which many climate modelling centres around the world run standardised experiments using their Earth System Models \citep{eyring_overview_2016}. It is useful to compare the effects of new changes to a model with data from CMIP6 models because they provide a benchmark of current scientific knowledge and model uncertainty. 
 
 % CMIP.
 \begin{sidewaysfigure}[htpb]
     \centering 
-    \includegraphics[width=\textheight]{images/gaps CMIP avgs.png}
+    \includegraphics[width=\textheight]{images/CMIP avgs.png}
     \caption{\textit{Monthly mean global ozone over 30-year simulations from different CMIP6 models along with the emulation.}}
     \label{CMIP O3}
 \end{sidewaysfigure}
 
 % CMIP models used.
-Figure \ref{CMIP O3} exhibits global monthly mean ozone mole fraction over 30-year simulations from AMIP-nudged UM runs with Fast-JX and the stratospheric photolysis scheme, and with the random forest emulation. Three different CMIP6 models were included, which provided ozone data over the required date range for comparison. They include the USA's National Center of Atmospheric Research (NCAR) Community Earth System Model version 2 \cite{danabasoglu_community_2020}, the Centre National de Recherches Météorologiques (CNRM) Earth System Model version 2 \cite{seferian_development_2016}, from France, and the Beijing Climate Center (BCC) Earth System Model version 1 \cite{wu_beijing_2019}, from China. 
+Figure \ref{CMIP O3} exhibits global monthly mean ozone mole fraction over 30-year simulations from AMIP-nudged UM runs with Fast-JX and the stratospheric photolysis scheme, and with the random forest emulation. Three different CMIP6 models were included, which provided ozone data over the required date range for comparison. They include the USA's National Center of Atmospheric Research (NCAR) Community Earth System Model version 2 \citep{danabasoglu_community_2020}, the Centre National de Recherches Météorologiques (CNRM) Earth System Model version 2 \citep{seferian_development_2016}, from France, and the Beijing Climate Center (BCC) Earth System Model version 1 \citep{wu_beijing_2019}, from China. 
 
 % Spin up.
-The initial drop in UKCA ozone is due to a relatively long stratospheric ozone spin-up period, which is expected \cite{weber_global_2022}; this plot includes the start of the UM run, which began at January 1982, but the CMIP6 models shown began their simulations at earlier dates and had already completed their spin-up periods before 1982.
+The initial drop in UKCA ozone is due to a relatively long stratospheric ozone spin-up period, which is expected \citep{weber_global_2022}; this plot includes the start of the UM run, which began at January 1982, but the CMIP6 models shown began their simulations at earlier dates and had already completed their spin-up periods before 1982.
 
 % RF analysis.
 Variability between downstream ozone mole fraction from UKCA with and without the random forest emulation was less than the variability between different CMIP6 models. UKCA with the photolysis emulation also produced ozone within the existing range of uncertainty between CMIP6 models. This indicates that the emulation produces acceptable effects on online downstream chemistry. 
@@ -998,23 +1025,11 @@ This work was supported by the UKRI Centre for Doctoral Training in Application 
 
 %% REFERENCES
 
-%% The reference list is compiled as follows:
-
-\begin{thebibliography}{}
-
-\bibitem[AUTHOR(YEAR)]{LABEL1}
-REFERENCE 1
-
-\bibitem[AUTHOR(YEAR)]{LABEL2}
-REFERENCE 2
-
-\end{thebibliography}
-
 %% Since the Copernicus LaTeX package includes the BibTeX style file copernicus.bst,
 %% authors experienced with BibTeX only have to include the following two lines:
 %%
-%% \bibliographystyle{copernicus}
-%% \bibliography{example.bib}
+\bibliographystyle{copernicus}
+\bibliography{refs.bib}
 %%
 %% URLs and DOIs can be entered in your BibTeX file as:
 %%

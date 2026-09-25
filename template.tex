@@ -154,7 +154,7 @@
 
 \begin{document}
 
-\title{Emulation of the United Kingdom Chemistry and Aerosols (version 13.9) Photolysis Schemes (Fast-JX version 6.4) with a Random Forest}
+\title{Emulation of the United Kingdom Chemistry and Aerosols (version 13.9) Photolysis Schemes (Fast-JX version 6.4) with a Random Forest (Forest-J version 1.0)}
 
 
 % \Author[affil]{given_name}{surname}
@@ -216,7 +216,7 @@ The primary objective of this project was to develop a machine learning model to
 UKCA photolysis rate coefficients for multiple reactions were emulated using a random forest, which was trained offline in python using physical input data from the UM, including solar zenith angle, temperature and cloud information, as well as shortwave solar fluxes from the radiation scheme. The random forest was then integrated into UKCA in Fortran and run online in the UM. 
 
 % Accuracy.
-The random forest was able to emulate UKCA photolysis rate coefficients accurately, with a coefficient of determination of 0.97 compared to the original scheme over all emulated reactions, and 0.76 to over 0.99 for individual reactions. When coupled to the UM, the results compared well between simulations with the standard interactive photolysis scheme and the random forest emulator. Ozone mixing ratios were... {summarise the impacts on concentrations of species} 
+The random forest was able to emulate UKCA photolysis rate coefficients accurately, with a coefficient of determination of 0.97 compared to the original scheme over all emulated reactions, and 0.76 to over 0.99 for individual reactions. When coupled to the UM, the results compared well between simulations with the standard photolysis scheme and the emulator. Ozone mixing ratios were... {summarise the impacts on concentrations of species} 
 % Speedup.
 The random forest photolysis scheme ran seven times faster in UKCA than the main existing photolysis scheme, Fast-JX, and the whole UM ran 1.97\% faster, potentially allowing an extra four weeks of simulation per real day.
 
@@ -241,7 +241,7 @@ J_i,z = \int_{0}^{\infty} \Phi_i (\lambda, T) \sigma_i (\lambda, T) F_z (\theta,
 where $\Phi$ is the quantum yield for photolysis of the chemical, $\lambda$ is the wavelength, $T$ is the temperature, $\sigma$ is the absorption cross-section, $F$ is the flux of light, also known as the actinic flux, $\theta$ is the solar zenith angle and $d \lambda$ is the change in wavelength \citep{king_calculating_2013}. Flux refers to the difference in the amount of radiation reaching the molecule over time, which varies significantly at a point in space over the course of a day.
 At a point in space and time in the atmosphere, the solar zenith angle (SZA, $\theta$) is the angle between the direction of incoming solar radiation and the local vertical line perpendicular to the Earth's surface at that point \citep{finlayson-pitts_chemistry_2000}. 
 
-The photon flux, F, is calculated by {add some details here about how F is calculated -- this is a big part of what FastJx is doing so needs to come here so the reader understands why this is complex} 
+Fast-JX performs several linear functions to determine flux, $F$, at every latitude, longitude and vertical level, for each wavelength bin.
 J-values can range from around $10^{-16} s^{-1}$ to over $10^{-2} s^{-1}$ for different species in the atmosphere and vary greatly with altitude.
 
 % UKESM, UM and UKCA.
@@ -372,14 +372,14 @@ The random forest design was tuned by adjusting number of trees, depth of trees,
 
 \begin{figure}[htpb]
     \centering 
-    \includegraphics[scale=0.9]{images/Forest n trees MSE.svg}
+    \includegraphics[scale=0.9]{images/Forest n trees MSE.png}
     \caption{\textit{MSE of random forests of 1 to 20 trees, predicting a representative subset of reactions (\JHCHOr, \JOOO, \JNOO, \JNOOO, \JHOCl\ and \JHHOO) from physical inputs in a global sample of one year of data.}}
     \label{n trees MSE}
 \end{figure}
 
 \begin{figure}[htpb]
     \centering 
-    \includegraphics[scale=0.95]{images/n trees R2.svg}
+    \includegraphics[scale=0.95]{images/n trees R2.png}
     \caption{\textit{Mean \RR\ scores of predictions to targets from random forests containing different numbers of trees, from 1 to 100. Physical inputs were used to predict all J-values in a global sample of one year of data.}}
     \label{n trees R2}
 \end{figure}
